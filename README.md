@@ -18,10 +18,28 @@ npm install app-dal
 var dal = require('app-dal');
 var knex = require('../your-knex');
 
-var users = dal({ table: 'users', knex: knex });
+var users = dal({ table: 'users', knex: knex, softDeletes: true });
 
 users.query().then(console.log);
 // [{ id: 1, email: 'email@example.com', ... }, ... ]
+```
+
+## Options
+
+```javascript
+{
+	 // table name
+	table: 'users',
+
+	 // (optional) if you want specific fields picked from data object for create and update,
+	fields: ['email', 'name', 'address'],
+
+	// Knex instance
+	knex: knex,
+
+	// Enable soft deletes (disabled by default)
+	softDeletes: true
+}
 ```
 
 ## API
@@ -82,11 +100,9 @@ Also you can pass `offset` and `limit` params via `options` object:
 users.query(null, { offset: 50, limit: 50 });
 ```
 
-### remove (Int id)
+### remove (Object|Int criteria)
 
-Assumes that table has `removed_at timestamp` field (we do love soft deletes).
-
-`remove` method simply inserts current timestamp into `removed_at` column
+Removes row by criteria.
 
 ```javascript
 // Remove by id
@@ -97,6 +113,11 @@ users.remove(304).then(console.log);
 users.remove({ name: 'John' }).then(console.log);
 // 434
 ```
+
+#### Soft deletes
+
+Assumes that table has `removed_at timestamp` field (we do love soft deletes).
+`remove` method simply inserts current timestamp into `removed_at` column.
 
 ## LICENSE
 MIT
