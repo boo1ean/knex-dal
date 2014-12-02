@@ -116,7 +116,8 @@ users.remove({ name: 'John' }).then(console.log);
 
 #### Soft deletes
 
-Assumes that table has `removed_at timestamp` field (we do love soft deletes).
+In case when `softDeletes` option is used.   
+Dal assumes that table has `removed_at timestamp` field (we do love soft deletes).   
 `remove` method simply inserts current timestamp into `removed_at` column.
 
 ## LICENSE
