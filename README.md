@@ -40,7 +40,7 @@ users.create({ name: 'John', email: 'jhon@example.com' }).then(console.log);
 Data object should contain id property which is used for where closure.   
 Update method returns updated row id.
 
-Example of updating `email` for user with `id = 105` we do:
+Example of updating `email` for user with `id = 105`:
 
 ```javascript
 users.update({ id: 105, email: 'new@example.com' }).then(console.log);
@@ -56,7 +56,7 @@ users.find({ email: 'my@example.com' }).then(console.log);
 // { id: 343, email: 'my@example.com', ... }
 ```
 
-If scalar value is passed to `find` it assumes that it's row id and build corresponding where closure:
+If scalar value is passed to `find` dal assumes that it's row's id and build corresponding where closure:
 
 ```javascript
 users.find(343).then(console.log);
@@ -65,7 +65,7 @@ users.find(343).then(console.log);
 
 ### query (Object criteria, Object options)
 
-Find list of objects by given criteria
+Finds list of objects by given criteria.
 
 ```javascript
 // Find all users
@@ -75,7 +75,7 @@ users.query();
 users.query({ type: 'manager' });
 ```
 
-Also you can pass `offset` and `limit` params via `options` object
+Also you can pass `offset` and `limit` params via `options` object:
 
 ```javascript
 // 50 users starting from 50 (typically for pagination)
