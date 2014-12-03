@@ -38,7 +38,10 @@ users.query().then(console.log);
 	knex: knex,
 
 	// Enable soft deletes (disabled by default)
-	softDeletes: true
+	softDeletes: true,
+
+	// Object with additional methods
+	methods: { findLast: function () { ... } }
 }
 ```
 

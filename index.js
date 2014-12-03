@@ -6,15 +6,16 @@ function build (opts) {
 	var knex = opts.knex;
 	var table = opts.table;
 	var fields = _.isArray(opts.fields) ? opts.fields : null;
+	var methods = _.isObject(opts.methods) ? opts.methods : {};
 	var softDeletes = opts.softDeletes;
 
-	return {
+	return _.extend({
 		create: getCreateMethod(),
 		update: getUpdateMethod(),
 		remove: getRemoveMethod(),
 		find: getFindMethod(),
 		query: getQueryMethod()
-	};
+	}, methods);
 
 	// Check if options are ok
 	function assertOptions (opts) {
