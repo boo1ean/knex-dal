@@ -31,16 +31,19 @@ users.query().then(console.log);
 	 // table name
 	table: 'users',
 
-	 // (optional) if you want specific fields picked from data object for create and update,
-	fields: ['email', 'name', 'address'],
-
 	// Knex instance
 	knex: knex,
+
+	// (optional) table to perform read queries (e.g. use view for read operations)
+	viewTable: 'v_users',
+
+	 // (optional) If you want specific fields picked from data object for create and update,
+	fields: ['email', 'name', 'address'],
 
 	// Enable soft deletes (disabled by default)
 	softDeletes: true,
 
-	// Object with additional methods
+	// (optional) Object with additional methods
 	methods: { findLast: function () { ... } }
 }
 ```

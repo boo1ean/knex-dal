@@ -5,6 +5,7 @@ function build (opts) {
 
 	var knex = opts.knex;
 	var table = opts.table;
+	var viewTable = opts.viewTable || table;
 	var fields = _.isArray(opts.fields) ? opts.fields : null;
 	var methods = _.isObject(opts.methods) ? opts.methods : {};
 	var softDeletes = opts.softDeletes;
@@ -79,7 +80,7 @@ function build (opts) {
 		return function find (criteria) {
 			return knex
 			.first('*')
-			.from(table)
+			.from(viewTable)
 			.where(prepareCriteria(criteria));
 		}
 	}
@@ -90,7 +91,7 @@ function build (opts) {
 
 			var query = knex
 			.select('*')
-			.from(table)
+			.from(viewTable)
 			.where(criteria);
 
 			// Check out additional options
