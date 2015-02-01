@@ -94,6 +94,10 @@ function build (opts) {
 			.from(viewTable)
 			.where(criteria);
 
+			if (softDeletes) {
+				query.whereNull('removed_at');
+			}
+
 			// Check out additional options
 			if (opts) {
 				if (opts.limit && opts.limit > 0) {
@@ -111,11 +115,18 @@ function build (opts) {
 
 	// If field constraints are specified then filter input data
 	function attrs (data) {
-		if (!fields) {
-			return data;
+		return stringifyObjects(fields ? _.pick(data, fields) : data);
+	}
+
+	// Stringify properties (e.g. for postgres json types)
+	function stringifyObjects (obj) {
+		for (var i in obj) {
+			if (_.isObject(obj[i])) {
+				obj[i] = JSON.stringify(obj[i]);
+			}
 		}
 
-		return _.pick(data, fields);
+		return obj;
 	}
 
 	function prepareCriteria (criteria) {

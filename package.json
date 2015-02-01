@@ -1,6 +1,6 @@
 {
   "name": "app-dal",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "Simple knex dal builder",
   "main": "index.js",
   "scripts": {
