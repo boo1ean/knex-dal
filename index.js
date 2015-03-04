@@ -6,7 +6,13 @@ function build (opts) {
 	var knex = opts.knex;
 	var table = opts.table;
 	var viewTable = opts.viewTable || table;
-	var fields = _.isArray(opts.fields) ? opts.fields : null;
+
+	var fields       = _.isArray(opts.fields)       ? _.clone(opts.fields)       : null;
+	var queryFields  = _.isArray(opts.queryFields)  ? _.clone(opts.queryFields)  : null;
+	var createFields = _.isArray(opts.createFields) ? _.clone(opts.createFields) : null;
+	var updateFields = _.isArray(opts.updateFields) ? _.clone(opts.updateFields) : null;
+	var removeFields = _.isArray(opts.removeFields) ? _.clone(opts.removeFields) : null;
+
 	var methods = _.isObject(opts.methods) ? opts.methods : {};
 	var softDeletes = opts.softDeletes;
 
@@ -36,7 +42,7 @@ function build (opts) {
 	function getCreateMethod () {
 		return function create (data) {
 			return knex(table)
-			.insert(attrs(data))
+			.insert(attrs(data, createFields))
 			.returning('id')
 			.then(_.first);
 		}
@@ -50,7 +56,7 @@ function build (opts) {
 
 			return knex(table)
 				.where('id', data.id)
-				.update(attrs(data))
+				.update(attrs(data, updateFields))
 				.returning('id')
 				.then(_.first);
 		}
@@ -60,7 +66,7 @@ function build (opts) {
 		if (softDeletes) {
 			return function remove (criteria) {
 				return knex(table)
-					.where(prepareCriteria(criteria))
+					.where(prepareCriteria(criteria, removeFields))
 					.update({ removed_at: 'now' })
 					.returning('id')
 					.then(_.first);
@@ -68,7 +74,7 @@ function build (opts) {
 		} else {
 			return function remove (criteria) {
 				return knex(table)
-					.where(prepareCriteria(criteria))
+					.where(prepareCriteria(criteria, removeFields))
 					.del()
 					.returning('id')
 					.then(_.first);
@@ -81,7 +87,7 @@ function build (opts) {
 			return knex
 			.first('*')
 			.from(viewTable)
-			.where(prepareCriteria(criteria));
+			.where(prepareCriteria(criteria, queryFields));
 		}
 	}
 
@@ -92,7 +98,7 @@ function build (opts) {
 			var query = knex
 			.select('*')
 			.from(viewTable)
-			.where(criteria);
+			.where(prepareCriteria(criteria, queryFields));
 
 			if (softDeletes) {
 				query.whereNull('removed_at');
@@ -129,7 +135,7 @@ function build (opts) {
 		return obj;
 	}
 
-	function prepareCriteria (criteria) {
+	function prepareCriteria (criteria, specificFields) {
 		if (!criteria) {
 			throw new Error('Criteria is required');
 		}
@@ -137,6 +143,10 @@ function build (opts) {
 		// If scalar passed, assume it's record id
 		if (!_.isObject(criteria)) {
 			return { id: criteria };
+		}
+
+		if (specificFields || fields) {
+			return _.pick(criteria, specificFields || fields);
 		}
 
 		return criteria;
