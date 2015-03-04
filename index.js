@@ -139,7 +139,7 @@ function build (opts) {
 	// Stringify properties (e.g. for postgres json types)
 	function stringifyObjects (obj) {
 		for (var i in obj) {
-			if (_.isObject(obj[i])) {
+			if (_.isObject(obj[i]) && !(obj[i] instanceof Buffer)) {
 				obj[i] = JSON.stringify(obj[i]);
 			}
 		}
