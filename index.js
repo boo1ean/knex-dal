@@ -14,7 +14,7 @@ function build (opts) {
 	var removeFields = _.isArray(opts.removeFields) ? _.clone(opts.removeFields) : null;
 
 	var methods = _.isObject(opts.methods) ? opts.methods : {};
-	var softDeletes = opts.softDeletes;
+	var softDeleteColumn = opts.softDeleteColumn || null;
 
 	return _.extend({
 		create: getCreateMethod(),
@@ -63,11 +63,15 @@ function build (opts) {
 	}
 
 	function getRemoveMethod () {
-		if (softDeletes) {
+		if (softDeleteColumn) {
 			return function remove (criteria) {
+
+				var data = {};
+				data[softDeleteColumn] = 'now';
+
 				return knex(table)
 					.where(prepareCriteria(criteria, removeFields))
-					.update({ removed_at: 'now' })
+					.update(data)
 					.returning('id')
 					.then(_.first);
 			}
@@ -84,10 +88,16 @@ function build (opts) {
 
 	function getFindMethod () {
 		return function find (criteria) {
-			return knex
-			.first('*')
-			.from(viewTable)
-			.where(prepareCriteria(criteria, queryFields));
+			var query = knex
+				.first('*')
+				.from(viewTable)
+				.where(prepareCriteria(criteria, queryFields));
+
+			if (softDeleteColumn) {
+				query.whereNull(softDeleteColumn);
+			}
+
+			return query;
 		}
 	}
 
@@ -96,12 +106,12 @@ function build (opts) {
 			criteria = criteria || {};
 
 			var query = knex
-			.select('*')
-			.from(viewTable)
-			.where(prepareCriteria(criteria, queryFields));
+				.select('*')
+				.from(viewTable)
+				.where(prepareCriteria(criteria, queryFields));
 
-			if (softDeletes) {
-				query.whereNull('removed_at');
+			if (softDeleteColumn) {
+				query.whereNull(softDeleteColumn);
 			}
 
 			// Check out additional options

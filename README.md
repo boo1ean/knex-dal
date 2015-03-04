@@ -51,8 +51,12 @@ users.query().then(console.log);
 	updateFields: ['name', 'address'],
 	removeFields: ['id'],
 
-	// Enable soft deletes (disabled by default)
-	softDeletes: true,
+	// Soft deletes column should by type of date / timestamp
+	// removed_at = null,     - object exists
+	// removed_at = not null, - object removed
+	// By specifying softDeleteColumn will force remove method to set it's value to "now"
+	// And query / find methods to check for "removed_at is not null"
+	softDeleteColumn: 'removed_at',
 
 	// (optional) Object with additional methods
 	methods: { findLast: function () { ... } }
@@ -133,9 +137,7 @@ users.remove({ name: 'John' }).then(console.log);
 
 #### Soft deletes
 
-In case when `softDeletes` option is used.   
-Dal assumes that table has `removed_at timestamp` field (we do love soft deletes).   
-`remove` method simply inserts current timestamp into `removed_at` column.
+In case when `softDeleteColumn` option is used ... (see options description above)
 
 ## LICENSE
 MIT
