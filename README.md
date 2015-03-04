@@ -14,11 +14,16 @@ npm install app-dal
 
 ## Usage
 
+Minimal setup
+
 ```javascript
 var dal = require('app-dal');
 var knex = require('../your-knex');
 
-var users = dal({ table: 'users', knex: knex, softDeletes: true });
+var users = dal({
+	knex: knex,
+	table: 'users'
+});
 
 users.query().then(console.log);
 // [{ id: 1, email: 'email@example.com', ... }, ... ]
@@ -37,8 +42,14 @@ users.query().then(console.log);
 	// (optional) table to perform read queries (e.g. use view for read operations)
 	viewTable: 'v_users',
 
-	 // (optional) If you want specific fields picked from data object for create and update,
+	 // (optional) Default list of fields to work with for all methods
 	fields: ['email', 'name', 'address'],
+
+	// Default list of fields could be overrided by method-specific configuration
+	queryFields:  ['email', 'name'],
+	createFields: ['email', 'name', 'address'],
+	updateFields: ['name', 'address'],
+	removeFields: ['id'],
 
 	// Enable soft deletes (disabled by default)
 	softDeletes: true,
