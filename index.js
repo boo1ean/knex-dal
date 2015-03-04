@@ -46,7 +46,7 @@ function build (opts) {
 			return knex(table)
 			.insert(_.defaults(attrs(data, createFields), defaults.create))
 			.returning('id')
-			//.then(_.first);
+			.then(_.first);
 		}
 	}
 
