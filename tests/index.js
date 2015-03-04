@@ -1,6 +1,6 @@
 var test = require('tape');
 var knex = require('knex')({
-	client: 'sqlite', 
+	client: 'postgresql', 
 	connection: { database: 'app', user: 'root', password: 'root' },
 });
 var dal = require('../');
@@ -16,5 +16,16 @@ var softUsers = dal({
 	softDeleteColumn: 'removed_at'
 });
 
-require('./find')(users, softUsers);
-require('./query')(users, softUsers);
+var usersWithDefaults = dal({
+	table: 'users',
+	knex: knex,
+
+	defaults: {
+		create: { created_at: 'now' },
+		update: { updated_at: 'now' }
+	}
+});
+
+require('./find')(users, softUsers, usersWithDefaults);
+require('./query')(users, softUsers, usersWithDefaults);
+require('./create')(users, softUsers, usersWithDefaults);

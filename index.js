@@ -13,6 +13,8 @@ function build (opts) {
 	var updateFields = _.isArray(opts.updateFields) ? _.clone(opts.updateFields) : null;
 	var removeFields = _.isArray(opts.removeFields) ? _.clone(opts.removeFields) : null;
 
+	var defaults = _.isObject(opts.defaults) ? _.clone(opts.defaults) : {};
+
 	var methods = _.isObject(opts.methods) ? opts.methods : {};
 	var softDeleteColumn = opts.softDeleteColumn || null;
 
@@ -42,9 +44,9 @@ function build (opts) {
 	function getCreateMethod () {
 		return function create (data) {
 			return knex(table)
-			.insert(attrs(data, createFields))
+			.insert(_.defaults(attrs(data, createFields), defaults.create))
 			.returning('id')
-			.then(_.first);
+			//.then(_.first);
 		}
 	}
 
@@ -56,7 +58,7 @@ function build (opts) {
 
 			return knex(table)
 				.where('id', data.id)
-				.update(attrs(data, updateFields))
+				.update(_.defaults(attrs(data, updateFields), defaults.update))
 				.returning('id')
 				.then(_.first);
 		}
@@ -130,8 +132,8 @@ function build (opts) {
 	}
 
 	// If field constraints are specified then filter input data
-	function attrs (data) {
-		return stringifyObjects(fields ? _.pick(data, fields) : data);
+	function attrs (data, specificFields) {
+		return stringifyObjects(fields || specificFields ? _.pick(data, specificFields || fields) : data);
 	}
 
 	// Stringify properties (e.g. for postgres json types)
