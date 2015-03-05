@@ -154,11 +154,15 @@ function build (opts) {
 
 		// If scalar passed, assume it's record id
 		if (!_.isObject(criteria)) {
-			return { id: criteria };
+			criteria = { id: criteria };
 		}
 
 		if (specificFields || fields) {
-			return _.pick(criteria, specificFields || fields);
+			criteria = _.pick(criteria, specificFields || fields);
+		}
+
+		if (_.isEmpty(criteria)) {
+			throw new Error('Empty criteria, please check fields config');
 		}
 
 		return criteria;
