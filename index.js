@@ -71,16 +71,28 @@ function build (opts) {
 				var data = {};
 				data[softDeleteColumn] = 'now';
 
+				var criteria = prepareCriteria(criteria, removeFields)
+
+				if (_.isEmpty(criteria)) {
+					throw new Error('Empty criteria, please check fields config');
+				}
+
 				return knex(table)
-					.where(prepareCriteria(criteria, removeFields))
+					.where(criteria)
 					.update(data)
 					.returning('id')
 					.then(_.first);
 			}
 		} else {
 			return function remove (criteria) {
+				var criteria = prepareCriteria(criteria, removeFields)
+
+				if (_.isEmpty(criteria)) {
+					throw new Error('Empty criteria, please check fields config');
+				}
+
 				return knex(table)
-					.where(prepareCriteria(criteria, removeFields))
+					.where(criteria)
 					.del()
 					.returning('id')
 					.then(_.first);
@@ -159,10 +171,6 @@ function build (opts) {
 
 		if (specificFields || fields) {
 			criteria = _.pick(criteria, specificFields || fields);
-		}
-
-		if (_.isEmpty(criteria)) {
-			throw new Error('Empty criteria, please check fields config');
 		}
 
 		return criteria;
