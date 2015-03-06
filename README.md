@@ -42,10 +42,7 @@ users.query().then(console.log);
 	// (optional) table to perform read queries (e.g. use view for read operations)
 	viewTable: 'v_users',
 
-	 // (optional) Default list of fields to work with for all methods
-	fields: ['email', 'name', 'address'],
-
-	// Default list of fields could be overrided by method-specific configuration
+	// method-specific fields configuration
 	queryFields:  ['email', 'name'],
 	createFields: ['email', 'name', 'address'],
 	updateFields: ['name', 'address'],

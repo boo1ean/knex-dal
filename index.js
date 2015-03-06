@@ -7,7 +7,6 @@ function build (opts) {
 	var table = opts.table;
 	var viewTable = opts.viewTable || table;
 
-	var fields       = _.isArray(opts.fields)       ? _.clone(opts.fields)       : null;
 	var queryFields  = _.isArray(opts.queryFields)  ? _.clone(opts.queryFields)  : null;
 	var createFields = _.isArray(opts.createFields) ? _.clone(opts.createFields) : null;
 	var updateFields = _.isArray(opts.updateFields) ? _.clone(opts.updateFields) : null;
@@ -145,7 +144,7 @@ function build (opts) {
 
 	// If field constraints are specified then filter input data
 	function attrs (data, specificFields) {
-		return stringifyObjects(fields || specificFields ? _.pick(data, specificFields || fields) : data);
+		return stringifyObjects(specificFields ? _.pick(data, specificFields) : data);
 	}
 
 	// Stringify properties (e.g. for postgres json types)
@@ -169,8 +168,8 @@ function build (opts) {
 			criteria = { id: criteria };
 		}
 
-		if (specificFields || fields) {
-			criteria = _.pick(criteria, specificFields || fields);
+		if (specificFields) {
+			criteria = _.pick(criteria, specificFields);
 		}
 
 		return criteria;
