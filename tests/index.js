@@ -1,24 +1,30 @@
+var mockDB = require('mock-knex');
 var test = require('tape');
-var knex = require('knex')({
-	client: 'postgresql', 
+var knex = require('knex');
+
+mockDB.knex.use(knex);
+mockDB.knex.install();
+
+var db = knex({
+	client: 'postgres',
 	connection: { database: 'app', user: 'root', password: 'root' },
 });
 var dal = require('../');
 
 var users = dal({
 	table: 'users',
-	knex: knex
+	knex: db
 });
 
 var softUsers = dal({
 	table: 'users',
-	knex: knex,
+	knex: db,
 	softDeleteColumn: 'removed_at'
 });
 
 var usersWithDefaults = dal({
 	table: 'users',
-	knex: knex,
+	knex: db,
 
 	defaults: {
 		create: { created_at: 'now' },
