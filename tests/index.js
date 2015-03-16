@@ -32,6 +32,32 @@ var usersWithDefaults = dal({
 	}
 });
 
-require('./find')(users, softUsers, usersWithDefaults);
-require('./query')(users, softUsers, usersWithDefaults);
-require('./create')(users, softUsers, usersWithDefaults);
+var usersWithPicks = dal({
+	table: 'users',
+	knex: db,
+
+	pick: {
+		create: ['email', 'password'],
+		update: ['email', 'password']
+	}
+});
+
+var usersWithPicksAndDefaults = dal({
+	table: 'users',
+	knex: db,
+
+	defaults: {
+		create: { created_at: 'now' },
+		update: { updated_at: 'now' }
+	},
+
+	pick: {
+		create: ['email', 'password'],
+		update: ['email', 'password']
+	}
+});
+
+require('./find')   (users, softUsers, usersWithDefaults, usersWithPicks, usersWithPicksAndDefaults);
+require('./query' ) (users, softUsers, usersWithDefaults, usersWithPicks, usersWithPicksAndDefaults);
+require('./create') (users, softUsers, usersWithDefaults, usersWithPicks, usersWithPicksAndDefaults);
+require('./update') (users, softUsers, usersWithDefaults, usersWithPicks, usersWithPicksAndDefaults);
