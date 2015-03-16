@@ -7,14 +7,10 @@ function build (opts) {
 	var table = opts.table;
 	var viewTable = opts.viewTable || table;
 
-	var queryFields  = _.isArray(opts.queryFields)  ? _.clone(opts.queryFields)  : null;
-	var createFields = _.isArray(opts.createFields) ? _.clone(opts.createFields) : null;
-	var updateFields = _.isArray(opts.updateFields) ? _.clone(opts.updateFields) : null;
-	var removeFields = _.isArray(opts.removeFields) ? _.clone(opts.removeFields) : null;
-
+	var pick     = _.isObject(opts.pick)     ? _.clone(opts.pick)     : {};
 	var defaults = _.isObject(opts.defaults) ? _.clone(opts.defaults) : {};
+	var methods  = _.isObject(opts.methods)  ? opts.methods           : {};
 
-	var methods = _.isObject(opts.methods) ? opts.methods : {};
 	var softDeleteColumn = opts.softDeleteColumn || null;
 
 	return _.extend({
@@ -28,7 +24,7 @@ function build (opts) {
 	// Check if options are ok
 	function assertOptions (opts) {
 		if (!_.isObject(opts)) {
-			throw new Error('DAL options should be an object');
+			throw new Error('Options should be an object');
 		}
 
 		if (!opts.table) {
@@ -43,7 +39,7 @@ function build (opts) {
 	function getCreateMethod () {
 		return function create (data) {
 			return knex(table)
-			.insert(_.defaults(attrs(data, createFields), defaults.create))
+			.insert(_.defaults(attrs(data, pick.create), defaults.create))
 			.returning('id')
 			.then(_.first);
 		}
@@ -57,7 +53,7 @@ function build (opts) {
 
 			return knex(table)
 				.where('id', data.id)
-				.update(_.defaults(attrs(data, updateFields), defaults.update))
+				.update(_.defaults(attrs(data, pick.update), defaults.update))
 				.returning('id')
 				.then(_.first);
 		}
@@ -70,7 +66,7 @@ function build (opts) {
 				var data = {};
 				data[softDeleteColumn] = 'now';
 
-				var criteria = prepareCriteria(criteria, removeFields)
+				var criteria = prepareCriteria(criteria, pick.remove)
 
 				if (_.isEmpty(criteria)) {
 					throw new Error('Empty criteria, please check fields config');
@@ -84,7 +80,7 @@ function build (opts) {
 			}
 		} else {
 			return function remove (criteria) {
-				var criteria = prepareCriteria(criteria, removeFields)
+				var criteria = prepareCriteria(criteria, pick.remove)
 
 				if (_.isEmpty(criteria)) {
 					throw new Error('Empty criteria, please check fields config');
@@ -104,13 +100,14 @@ function build (opts) {
 			var query = knex
 				.first('*')
 				.from(viewTable)
-				.where(prepareCriteria(criteria, queryFields));
+				.where(prepareCriteria(criteria, pick.query));
 
 			if (softDeleteColumn) {
 				query.whereNull(softDeleteColumn);
 			}
 
-			return query;
+			// Use this to trigger query execution
+			return query.then(after);
 		}
 	}
 
@@ -121,7 +118,7 @@ function build (opts) {
 			var query = knex
 				.select('*')
 				.from(viewTable)
-				.where(prepareCriteria(criteria, queryFields));
+				.where(prepareCriteria(criteria, pick.query));
 
 			if (softDeleteColumn) {
 				query.whereNull(softDeleteColumn);
@@ -138,7 +135,8 @@ function build (opts) {
 				}
 			}
 
-			return query;
+			// Use this to trigger query execution
+			return query.then(after);
 		}
 	}
 
@@ -173,6 +171,10 @@ function build (opts) {
 		}
 
 		return criteria;
+	}
+
+	function after (data) {
+		return data;
 	}
 }
 

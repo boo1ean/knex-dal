@@ -42,11 +42,19 @@ users.query().then(console.log);
 	// (optional) table to perform read queries (e.g. use view for read operations)
 	viewTable: 'v_users',
 
-	// method-specific fields configuration
-	queryFields:  ['email', 'name'],
-	createFields: ['email', 'name', 'address'],
-	updateFields: ['name', 'address'],
-	removeFields: ['id'],
+	// Method-specific fields to pick from params object
+	pick: {
+		query:  ['email', 'name'],
+		create: ['email', 'name', 'address'],
+		update: ['name', 'address'],
+		remove: ['id'],
+	},
+
+	// Method-specific default attributes
+	defaults: {
+		create: { created_at: 'now' },
+		update: { updated_at: 'now' },
+	},
 
 	// Soft deletes column should by type of date / timestamp
 	// removed_at = null,     - object exists
