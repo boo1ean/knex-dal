@@ -1,6 +1,12 @@
 var test = require('tape');
 
 module.exports = function testFind (users, softUsers) {
+	test('find returns promise', function (t) {
+		var q = users.find(1);
+		t.equal(q.toString(), '[object Promise]');
+		t.end();
+	});
+
 	test('find by id', function (t) {
 		var q = users.find(1);
 		t.equal(q._boundTo.builder.toString(), 'select * from "users" where "id" = 1 limit 1');

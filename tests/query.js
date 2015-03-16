@@ -1,6 +1,12 @@
 var test = require('tape');
 
 module.exports = function testQuery (users, softUsers) {
+	test('query returns promise', function (t) {
+		var q = users.query();
+		t.equal(q.toString(), '[object Promise]');
+		t.end();
+	});
+
 	test('simple query', function (t) {
 		var q = users.query();
 		t.equal(q._boundTo.builder.toString(), 'select * from "users"');

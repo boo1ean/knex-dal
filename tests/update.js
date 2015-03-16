@@ -1,6 +1,12 @@
 var test = require('tape');
 
 module.exports = function testFind (users, softUsers, usersWithDefaults, usersWithPicks, usersWithPicksAndDefaults) {
+	test('update returns promise', function (t) {
+		var q = users.update({ id: 1, email: 1, password: 3 });
+		t.equal(q.toString(), '[object Promise]');
+		t.end();
+	});
+
 	test('simple update', function (t) {
 		var q = users.update({ id: 1, email: 1, password: 3 });
 		t.equal(q._boundTo.builder.toString(), 'update "users" set "email" = 1, "id" = 1, "password" = 3 where "id" = 1');

@@ -1,6 +1,12 @@
 var test = require('tape');
 
 module.exports = function testFind (users, softUsers, usersWithDefaults, usersWithPicks, usersWithPicksAndDefaults) {
+	test('create returns promise', function (t) {
+		var q = users.create({ email: 1, password: 3 });
+		t.equal(q.toString(), '[object Promise]');
+		t.end();
+	});
+
 	test('simple create', function (t) {
 		var q = users.create({ email: 1, password: 3 });
 		t.equal(q._boundTo.builder.toString(), 'insert into "users" ("email", "password") values (1, 3)');
