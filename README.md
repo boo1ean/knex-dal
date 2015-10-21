@@ -1,15 +1,11 @@
-## app-dal
+## knex database access layer builder
 
-Part of app-helpers project.
-
-Database access layer builder powered by [knex](http://knexjs.org/).
-
-Since it uses knex it's fully promise based (powered by [bluebird](https://github.com/petkaantonov/bluebird))
+Simple extendable database access layer builder aimed to work with raw objects and arrays instead of shitty OOP-ish models and collections junk.
 
 ## Installation
 
 ```
-npm install app-dal
+npm install knex-dal
 ```
 
 ## Usage
@@ -17,8 +13,8 @@ npm install app-dal
 Minimal setup
 
 ```javascript
-var dal = require('app-dal');
-var knex = require('../your-knex');
+var dal = require('knex-dal');
+var knex = require('../your-configured-knex');
 
 var users = dal({
 	knex: knex,
@@ -42,7 +38,7 @@ users.query().then(console.log);
 	// (optional) table to perform read queries (e.g. use view for read operations)
 	viewTable: 'v_users',
 
-	// Method-specific fields to pick from params object
+	// (optional) Method-specific fields to pick from input object
 	pick: {
 		query:  ['email', 'name'],
 		create: ['email', 'name', 'address'],
@@ -50,25 +46,25 @@ users.query().then(console.log);
 		remove: ['id'],
 	},
 
-	// Method-specific default attributes
+	// (optional) Method-specific default attributes to extend input object
 	defaults: {
 		create: { created_at: 'now' },
 		update: { updated_at: 'now' },
 	},
 
-	// Soft deletes column should by type of date / timestamp
-	// removed_at = null,     - object exists
-	// removed_at = not null, - object removed
-	// By specifying softDeleteColumn will force remove method to set it's value to "now"
-	// And query / find methods to check for "removed_at is not null"
+	// (optional) Soft deletes column
+	// removed_at = null,     - record exists
+	// removed_at = not null, - record removed
+	// If softDeleteColumn is set then remove method will make soft deletes instead of hard ones
+	// And query / find methods will check for "removed_at is not null"
 	softDeleteColumn: 'removed_at',
 
 	// (optional) Object with additional methods
-	methods: { findLast: function () { ... } }
+	methods: { findLast: function findLast () { ... } }
 }
 ```
 
-## API
+## Embeded methods
 
 ### create (Object data)
 
@@ -131,18 +127,50 @@ users.query(null, { offset: 50, limit: 50 });
 Removes row by criteria.
 
 ```javascript
-// Remove by id
-users.remove(304).then(console.log);
-// 304
-
 // Remove by criteria
 users.remove({ name: 'John' }).then(console.log);
 // 434
 ```
 
-#### Soft deletes
+If scalar value is passed to `remove` dal assumes that it's row's id and uses corresponding where closure:
 
-In case when `softDeleteColumn` option is used ... (see options description above)
+```javascript
+// Remove by id
+users.remove(304).then(console.log);
+// 304
+```
+
+## Extend dal with custom methods
+
+Here is common approach how add new methods to dal:
+
+```
+var lodash = require('lodash');
+var knex = require('../your-configured-knex');
+var table = 'users';
+
+module.exports = dal({
+	table: table,
+	knex: knex,
+	methods: {
+		removeIfProcessed: findOrCreate (params) {
+			return knex(table)
+				.where(params)
+				.where({ status: 'processed' })
+				.del()
+				.returning('id')
+				.then(_.first);
+		},
+		
+		...
+	}
+})
+
+// Somewhere in app
+
+var users = require('./dals/users');
+users.removeIfProcessed({ id: 100 }).then(...);
+```
 
 ## LICENSE
 MIT
