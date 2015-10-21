@@ -17,7 +17,7 @@ function build (opts) {
 	var dal = {};
 
 	mixins.forEach(function applyMixin (methods) {
-		_.extend(dal, methods);
+		_.extend(dal, assertAndBindMethods(methods, dal));
 	});
 
 	return _.extend(dal, {
