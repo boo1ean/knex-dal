@@ -20,7 +20,7 @@ function build (opts) {
 		remove: buildRemoveMethod(),
 		find: buildFindMethod(),
 		query: buildQueryMethod()
-	}, bindEach(methods, dal));
+	}, assertAndBindMethods(methods, dal));
 
 	// Check if options are ok
 	function assertOptions (opts) {
@@ -178,8 +178,12 @@ function build (opts) {
 		return data;
 	}
 
-	function bindEach (methods, thisArg) {
+	function assertAndBindMethods (methods, thisArg) {
 		for (var i in methods) {
+			if (typeof methods[i] !== 'function') {
+				throw new Error('DAL method should be function: ' + i);
+			}
+
 			methods[i] = methods[i].bind(thisArg);
 		}
 		return methods;
