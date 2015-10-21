@@ -144,7 +144,7 @@ users.remove(304).then(console.log);
 
 Here is common approach how add new methods to dal:
 
-```
+```javascript
 var lodash = require('lodash');
 var knex = require('../your-configured-knex');
 var table = 'users';
