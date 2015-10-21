@@ -13,13 +13,14 @@ function build (opts) {
 
 	var softDeleteColumn = opts.softDeleteColumn || null;
 
-	return _.extend({
-		create: getCreateMethod(),
-		update: getUpdateMethod(),
-		remove: getRemoveMethod(),
-		find: getFindMethod(),
-		query: getQueryMethod()
-	}, methods);
+	var dal = {};
+	return _.extend(dal, {
+		create: buildCreateMethod(),
+		update: buildUpdateMethod(),
+		remove: buildRemoveMethod(),
+		find: buildFindMethod(),
+		query: buildQueryMethod()
+	}, bindEach(methods, dal));
 
 	// Check if options are ok
 	function assertOptions (opts) {
@@ -36,16 +37,16 @@ function build (opts) {
 		}
 	}
 
-	function getCreateMethod () {
+	function buildCreateMethod () {
 		return function create (data) {
 			return knex(table)
-			.insert(_.defaults(attrs(data, pick.create), defaults.create))
-			.returning('id')
-			.then(_.first);
+				.insert(_.defaults(attrs(data, pick.create), defaults.create))
+				.returning('id')
+				.then(_.first);
 		}
 	}
 
-	function getUpdateMethod () {
+	function buildUpdateMethod () {
 		return function update (data) {
 			if (!data || !data.id) {
 				throw new Error('Update operation requires id');
@@ -59,7 +60,7 @@ function build (opts) {
 		}
 	}
 
-	function getRemoveMethod () {
+	function buildRemoveMethod () {
 		if (softDeleteColumn) {
 			return function remove (criteria) {
 
@@ -95,7 +96,7 @@ function build (opts) {
 		}
 	}
 
-	function getFindMethod () {
+	function buildFindMethod () {
 		return function find (criteria) {
 			var query = knex
 				.first('*')
@@ -111,7 +112,7 @@ function build (opts) {
 		}
 	}
 
-	function getQueryMethod () {
+	function buildQueryMethod () {
 		return function query (criteria, opts) {
 			criteria = criteria || {};
 
@@ -175,6 +176,13 @@ function build (opts) {
 
 	function after (data) {
 		return data;
+	}
+
+	function bindEach (methods, thisArg) {
+		for (var i in methods) {
+			methods[i] = methods[i].bind(thisArg);
+		}
+		return methods;
 	}
 }
 
