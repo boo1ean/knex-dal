@@ -10,10 +10,16 @@ function build (opts) {
 	var pick     = _.isObject(opts.pick)     ? _.clone(opts.pick)     : {};
 	var defaults = _.isObject(opts.defaults) ? _.clone(opts.defaults) : {};
 	var methods  = _.isObject(opts.methods)  ? opts.methods           : {};
+	var mixins   = _.isArray(opts.mixins)    ? opts.mixins            : [];
 
 	var softDeleteColumn = opts.softDeleteColumn || null;
 
 	var dal = {};
+
+	mixins.forEach(function applyMixin (methods) {
+		_.extend(dal, methods);
+	});
+
 	return _.extend(dal, {
 		create: buildCreateMethod(),
 		update: buildUpdateMethod(),
@@ -21,6 +27,8 @@ function build (opts) {
 		find: buildFindMethod(),
 		query: buildQueryMethod()
 	}, assertAndBindMethods(methods, dal));
+
+	return dal;
 
 	// Check if options are ok
 	function assertOptions (opts) {
