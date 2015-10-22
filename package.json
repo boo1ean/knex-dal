@@ -11,12 +11,12 @@
     "url": "https://github.com/boo1ean/knex-dal.git"
   },
   "keywords": [
-    "app-helpers",
     "knex",
     "database",
     "db",
     "dal",
     "model",
+    'postgres',
     "promised"
   ],
   "author": "Egor Gumenyuk <boo1ean0807@gmail.com>",
