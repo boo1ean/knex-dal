@@ -16,7 +16,7 @@
     "db",
     "dal",
     "model",
-    'postgres',
+    "postgres",
     "promised"
   ],
   "author": "Egor Gumenyuk <boo1ean0807@gmail.com>",
