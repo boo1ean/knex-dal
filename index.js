@@ -14,7 +14,15 @@ function build (opts) {
 
 	var softDeleteColumn = opts.softDeleteColumn || null;
 
-	var dal = {};
+	var dal = {
+		knex: knex,
+		meta: {
+			table: table,
+			viewTable: viewTable,
+			pick: pick,
+			defaults: defaults
+		}
+	};
 
 	mixins.forEach(function applyMixin (methods) {
 		_.extend(dal, assertAndBindMethods(methods, dal));
