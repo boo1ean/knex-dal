@@ -4,7 +4,7 @@
   "description": "Simple knex dal builder",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "node tests"
   },
   "repository": {
     "type": "git",
@@ -29,7 +29,8 @@
     "lodash": "^2.4.1"
   },
   "devDependencies": {
-    "knex": "^0.7.4",
+    "knex": "^0.12.6",
+    "mock-knex": "^0.3.7",
     "pg": "^4.3.0",
     "tape": "^3.5.0"
   }

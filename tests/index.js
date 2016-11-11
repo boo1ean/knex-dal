@@ -2,8 +2,7 @@ var mockDB = require('mock-knex');
 var test = require('tape');
 var knex = require('knex');
 
-mockDB.knex.use(knex);
-mockDB.knex.install();
+mockDB.mock(knex);
 
 var db = knex({
 	client: 'postgres',
