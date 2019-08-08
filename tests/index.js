@@ -2,12 +2,13 @@ var mockDB = require('mock-knex');
 var test = require('tape');
 var knex = require('knex');
 
-mockDB.mock(knex);
 
 var db = knex({
 	client: 'postgres',
-	connection: { database: 'app', user: 'root', password: 'root' },
 });
+
+mockDB.mock(db);
+
 var dal = require('../');
 
 var users = dal({

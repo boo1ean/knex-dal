@@ -57,8 +57,6 @@ function build (opts) {
 		return function create (data) {
 			return knex(table)
 				.insert(_.defaults(attrs(data, pick.create), defaults.create))
-				.returning('id')
-				.then(_.first);
 		}
 	}
 
@@ -71,8 +69,6 @@ function build (opts) {
 			return knex(table)
 				.where('id', data.id)
 				.update(_.defaults(attrs(data, pick.update), defaults.update))
-				.returning('id')
-				.then(_.first);
 		}
 	}
 
@@ -124,7 +120,7 @@ function build (opts) {
 			}
 
 			// Use this to trigger query execution
-			return query.then(after);
+			return query
 		}
 	}
 
@@ -153,7 +149,7 @@ function build (opts) {
 			}
 
 			// Use this to trigger query execution
-			return query.then(after);
+			return query
 		}
 	}
 
