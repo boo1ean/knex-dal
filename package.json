@@ -29,7 +29,7 @@
     "lodash": "^2.4.1"
   },
   "devDependencies": {
-    "knex": "^0.19.1",
+    "knex": "^2.4.0",
     "mock-knex": "^0.4.6",
     "pg": "^7.12.0",
     "tape": "^4.11.0"
